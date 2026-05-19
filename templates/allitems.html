@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Items · Campus Lost & Found{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="container">
+    <h1>Browse All Items</h1>
+    <div class="breadcrumb">
+      <a href="{% url 'home-page' %}">Home</a>
+      <span>›</span>
+      <span>All Items</span>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="padding-bottom: 70px;">
+
+  <!-- FILTER BAR -->
+  <form method="GET" class="filter-bar">
+    <input
+      type="text"
+      name="q"
+      value="{{ q }}"
+      placeholder="Search by name or description..."
+    >
+    <select name="category">
+      <option value="">All Categories</option>
+      {% for val, label in CATEGORY_CHOICES %}
+        <option value="{{ val }}" {% if category_filter == val %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+    <a href="{% url 'all-items' %}" class="btn btn-ghost btn-sm">Clear</a>
+  </form>
+
+
+  <!-- ===== LOST ITEMS SECTION ===== -->
+  <div class="browse-section">
+
+    <div class="browse-section-header">
+      <div class="browse-section-title lost-title">
+        <span class="section-dot lost-dot"></span>
+        <h2>Lost Items</h2>
+        <span class="section-count">{{ lost_total }}</span>
+      </div>
+      {% if lost_total > 6 %}
+        <a
+          href="?{% if q %}q={{ q }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}show_lost={% if show_lost_all %}none{% else %}all{% endif %}{% if show_found_all %}&show_found=all{% endif %}"
+          class="btn btn-outline btn-sm"
+        >
+          {% if show_lost_all %}Show Less ↑{% else %}View All {{ lost_total }} →{% endif %}
+        </a>
+      {% endif %}
+    </div>
+
+    {% if lost_items %}
+      <div class="items-grid">
+        {% for item in lost_items %}
+        <div class="item-card">
+          {% if item.image %}
+            <img class="item-card-img" src="{{ item.image.url }}" alt="{{ item.item }}">
+          {% else %}
+            <div class="item-card-img-placeholder">📦</div>
+          {% endif %}
+
+          <div class="item-card-body">
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <span class="item-badge badge-lost">LOST</span>
+              <span class="item-badge" style="background:#f3f0ff;color:#5b21b6;border:1px solid #c4b5fd;font-size:0.68rem;">
+                {{ item.category }}
+              </span>
+            </div>
+            <h3>{{ item.item }}</h3>
+            <p style="font-size:0.83rem; color:var(--text-light); line-height:1.4;">
+              {{ item.description|truncatechars:75 }}
+            </p>
+            <div class="item-meta">
+              <span>📅 {{ item.date_lost }}</span>
+              <span>👤 {{ item.owner_name }}</span>
+            </div>
+          </div>
+
+          <div class="item-card-actions">
+            {% if item.preferred_contact == 'Email' or item.preferred_contact == 'Both' %}
+              {% if item.email %}
+                <a href="mailto:{{ item.email }}" class="btn btn-primary btn-sm">✉️ Email</a>
+              {% endif %}
+            {% endif %}
+            {% if item.preferred_contact == 'Phone' or item.preferred_contact == 'Both' %}
+              {% if item.phone_number %}
+                <a href="tel:{{ item.phone_number }}" class="btn btn-primary btn-sm">📞 Call</a>
+              {% endif %}
+            {% endif %}
+            <span style="font-size:0.78rem;color:var(--text-light);align-self:center;margin-left:auto;">
+              {{ item.created_at|date:"M d, Y" }}
+            </span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Inline View More (shows below grid if there are more) -->
+      {% if lost_total > 6 and not show_lost_all %}
+        <div style="text-align:center; margin-top:24px;">
+          <a
+            href="?{% if q %}q={{ q }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}show_lost=all{% if show_found_all %}&show_found=all{% endif %}"
+            class="btn btn-outline"
+          >
+            View All {{ lost_total }} Lost Items →
+          </a>
+        </div>
+      {% endif %}
+
+    {% else %}
+      <div class="empty-state" style="padding: 40px 24px;">
+        <div class="icon">🔎</div>
+        <h3>No lost items found</h3>
+        <p>
+          {% if q or category_filter %}Try adjusting your search.
+          {% else %}Nothing has been reported lost yet.{% endif %}
+        </p>
+      </div>
+    {% endif %}
+
+  </div><!-- end lost section -->
+
+
+  <!-- ===== FOUND ITEMS SECTION ===== -->
+  <div class="browse-section" style="margin-top: 56px;">
+
+    <div class="browse-section-header">
+      <div class="browse-section-title found-title">
+        <span class="section-dot found-dot"></span>
+        <h2>Found Items</h2>
+        <span class="section-count">{{ found_total }}</span>
+      </div>
+      {% if found_total > 6 %}
+        <a
+          href="?{% if q %}q={{ q }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}show_found={% if show_found_all %}none{% else %}all{% endif %}{% if show_lost_all %}&show_lost=all{% endif %}"
+          class="btn btn-outline btn-sm"
+        >
+          {% if show_found_all %}Show Less ↑{% else %}View All {{ found_total }} →{% endif %}
+        </a>
+      {% endif %}
+    </div>
+
+    {% if found_items %}
+      <div class="items-grid">
+        {% for item in found_items %}
+        <div class="item-card">
+          {% if item.image %}
+            <img class="item-card-img" src="{{ item.image.url }}" alt="{{ item.item }}">
+          {% else %}
+            <div class="item-card-img-placeholder">✅</div>
+          {% endif %}
+
+          <div class="item-card-body">
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <span class="item-badge badge-found">FOUND</span>
+              <span class="item-badge" style="background:#f3f0ff;color:#5b21b6;border:1px solid #c4b5fd;font-size:0.68rem;">
+                {{ item.category }}
+              </span>
+            </div>
+            <h3>{{ item.item }}</h3>
+            <p style="font-size:0.83rem; color:var(--text-light); line-height:1.4;">
+              {{ item.description|truncatechars:75 }}
+            </p>
+            <div class="item-meta">
+              <span>📅 Lost: {{ item.date_lost }}</span>
+              <span>👤 {{ item.owner_name }}</span>
+            </div>
+          </div>
+
+          <div class="item-card-actions">
+            {% if item.preferred_contact == 'Email' or item.preferred_contact == 'Both' %}
+              {% if item.email %}
+                <a href="mailto:{{ item.email }}" class="btn btn-primary btn-sm">✉️ Email</a>
+              {% endif %}
+            {% endif %}
+            {% if item.preferred_contact == 'Phone' or item.preferred_contact == 'Both' %}
+              {% if item.phone_number %}
+                <a href="tel:{{ item.phone_number }}" class="btn btn-primary btn-sm">📞 Call</a>
+              {% endif %}
+            {% endif %}
+            <span style="font-size:0.78rem;color:var(--text-light);align-self:center;margin-left:auto;">
+              {{ item.created_at|date:"M d, Y" }}
+            </span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% if found_total > 6 and not show_found_all %}
+        <div style="text-align:center; margin-top:24px;">
+          <a
+            href="?{% if q %}q={{ q }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}show_found=all{% if show_lost_all %}&show_lost=all{% endif %}"
+            class="btn btn-outline"
+          >
+            View All {{ found_total }} Found Items →
+          </a>
+        </div>
+      {% endif %}
+
+    {% else %}
+      <div class="empty-state" style="padding: 40px 24px;">
+        <div class="icon">📭</div>
+        <h3>No found items yet</h3>
+        <p>
+          {% if q or category_filter %}Try adjusting your search.
+          {% else %}When a lost item is recovered, it will appear here.{% endif %}
+        </p>
+      </div>
+    {% endif %}
+
+  </div><!-- end found section -->
+
+</div>
+{% endblock %}

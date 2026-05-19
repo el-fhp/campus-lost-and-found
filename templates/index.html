@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<!-- HERO -->
+<section class="hero" style="background-image: url('{% static 'images/hero_image.webp' %}');">
+  <div class="hero-bg-pattern"></div>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <h1>How can we help?</h1>
+    <p>Report a lost item or help return something found on campus</p>
+
+    <form class="search-bar" method="GET" action="{% url 'all-items' %}">
+      <input type="text" name="q" placeholder="Search for lost or found items...">
+    </form>
+  </div>
+</section>
+
+
+<!-- FEATURE CARDS -->
+<section class="features container">
+
+  <a href="{% url 'submit-item' %}" class="feature-card" style="text-decoration:none;">
+    <img src="{% static 'images/submit_report.webp' %}" style="padding: 15px;" alt="Submit Item"
+      onerror="this.style.background='#eee';this.removeAttribute('src')">
+    <div class="feature-card-body">
+      <h3>Submit a Report</h3>
+      <p>Lost something on campus? Found an item? Post a report and help connect people with their belongings.</p>
+    </div>
+  </a>
+
+  <a href="{% url 'all-items' %}?status=LOST" class="feature-card" style="text-decoration:none;">
+    <img src="{% static 'images/lost_items.jpg' %}" style="padding: 15px;" alt="Browse Lost Items"
+      onerror="this.style.background='#eee';this.removeAttribute('src')">
+    <div class="feature-card-body">
+      <h3>Browse Lost Items</h3>
+      <p>See all items reported as lost across campus. Recognise something? Help reunite it with its owner.</p>
+    </div>
+  </a>
+
+  <a href="{% url 'all-items' %}?status=FOUND" class="feature-card" style="text-decoration:none;">
+    <img src="{% static 'images/found_items.jpg' %}" style="padding: 15px;" alt="Browse Found Items"
+      onerror="this.style.background='#eee';this.removeAttribute('src')">
+    <div class="feature-card-body">
+      <h3>Browse Found Items</h3>
+      <p>Check items that have been turned in around campus. Your lost item might already be waiting for you.</p>
+    </div>
+  </a>
+
+</section>
+{% if user.is_authenticated %}
+
+<!-- LATEST ITEMS -->
+<section class="items-section">
+  <div class="container">
+
+    <div class="items-section-header">
+      <h2>Recently Posted Items</h2>
+      <a href="{% url 'all-items' %}" class="btn btn-outline btn-sm">View All →</a>
+    </div>
+
+    {% if items %}
+    <div class="items-grid-wrapper">
+      <div class="items-grid">
+        {% for item in items %}
+        <div class="item-card">
+          {% if item.image %}
+          <img class="item-card-img" src="{{ item.image.url }}" alt="{{ item.title }}">
+          {% else %}
+          <div class="item-card-img-placeholder">📦</div>
+          {% endif %}
+          <div class="item-card-body">
+            <span class="item-badge badge-{{ item.status|lower }}">{{ item.status }}</span>
+            <h3>{{ item.title }}</h3>
+            <div class="item-meta">
+              <span>📍 {{ item.location }}</span>
+              <span>📅 {{ item.date_posted|date:"M d" }}</span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="icon">📭</div>
+      <h3>No items posted yet</h3>
+      <p>Be the first to report a lost or found item on campus.</p>
+      <br>
+      <a href="{% url 'submit-item' %}" class="btn btn-primary">Submit an Item</a>
+    </div>
+    {% endif %}
+
+
+  </div>
+  {% endif %}
+</section>
+</div>
+
+{% endblock content %}

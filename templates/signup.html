@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Register · Campus Lost & Found{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <div class="logo-area">
+            <div class="logo-shield-lg">L&F</div>
+            <h2>Create an Account</h2>
+            <p class="subtitle">Join the campus lost & found community</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {% if username_error %}
+            <div class="alert error-alert">
+                {{ username_error }}
+            </div>
+            {% endif %}
+
+            {% if password_error %}
+            <div class="alert error-alert">
+                {{ password_error }}
+            </div>
+            {% endif %}
+
+
+            <div class="form-group">
+                <input type="text" name="first_name" placeholder="First Name">
+                <input type="text" name="last_name" placeholder="Last Name">
+                <input type="email" name="email" placeholder="Email">
+                <input type="text" name="username" placeholder="Username">
+                <input type="password" name="password" placeholder="Password">
+                <input type="password" name="confirm_password" placeholder="Confirm Password">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:11px;">
+                Create Account
+            </button>
+        </form>
+
+        <div class="auth-divider"><span>Already have an account?</span></div>
+        <a href="{% url 'sign-in' %}" class="btn btn-outline" style="width:100%; justify-content:center; padding:10px;">
+            Sign In
+        </a>
+
+    </div>
+</div>
+{% endblock %}

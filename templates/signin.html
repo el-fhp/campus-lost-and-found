@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Login · Campus Lost & Found{% endblock %}
+
+{% block content %}
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <div class="logo-area">
+            <div class="logo-shield-lg">L&F</div>
+            <h2>Welcome</h2>
+            <p class="subtitle">Sign in to manage your posts</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert error-alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <div class="form-group">
+                <input type="text" name="username" placeholder="Username">
+                <input type="password" name="password" placeholder="Password">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:11px;">
+                Login
+            </button>
+        </form>
+
+        <div class="auth-divider">
+            <span>Don't have an account?</span>
+        </div>
+
+        <a href="{% url 'sign-up' %}" class="btn btn-outline" style="width:100%; justify-content:center; padding:10px;">
+            Create an Account
+        </a>
+
+    </div>
+</div>
+
+{% endblock content %}

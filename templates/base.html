@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Campus Lost & Found{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+  <!-- TOP RED BAR -->
+  <div class="top-bar-upper">
+    <div class="container">
+      <span>university.edu</span>
+      {% if user.is_authenticated %}
+        <span>Welcome, <strong>{{ user.username }}</strong> &nbsp;·&nbsp; <a href="{% url 'sign-out' %}">Sign Out</a></span>
+      {% else %}
+        <span>Please log in to see more relevant content &nbsp;
+          <button class="login-btn-small" onclick="window.location='{% url 'sign-in' %}'">Login</button>
+        </span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="top-bar">
+    <div class="container">
+      <a href="{% url 'home-page' %}" class="logo">
+        <div class="logo-shield">L&F</div>
+        <div class="logo-text">
+          <span class="logo-name">Campus Lost & Found</span>
+          <span class="logo-sub">University IT Services</span>
+        </div>
+      </a>
+
+      <nav class="main-nav">
+        <a href="{% url 'home-page' %}" class="{% if request.resolver_match.url_name == 'home-page' %}active{% endif %}">Home</a>
+        <a href="{% url 'submit-item' %}" class="{% if request.resolver_match.url_name == 'submit-item' %}active{% endif %}">Submit Item</a>
+        <a href="{% url 'all-items' %}" class="{% if request.resolver_match.url_name == 'all-items' %}active{% endif %}">Browse Items</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'my-posts' %}" class="{% if request.resolver_match.url_name == 'my-posts' %}active{% endif %}">My Posts</a>
+        {% endif %}
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- MESSAGES -->
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <!-- MAIN CONTENT -->
+  {% block content %}{% endblock %}
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <p>© {% now "Y" %} University Campus Lost & Found · IT Services</p>
+      <div class="footer-links">
+        <a href="#">IT Policies</a>
+        <a href="#">Contact & Support</a>
+        <a href="#">Hours & Locations</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

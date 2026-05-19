@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Report Lost Item · Campus Lost & Found{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="container">
+    <h1>Report a Lost Item</h1>
+    <div class="breadcrumb">
+      <a href="{% url 'home-page' %}">Home</a>
+      <span>›</span>
+      <span>Report Lost Item</span>
+    </div>
+  </div>
+</div>
+
+<div class="submit-wrapper">
+  <div class="submit-card">
+
+    <h2>Item Details</h2>
+    <p class="hint">
+      Fill in the details below to report your lost item. Once someone finds it,
+      you can mark it as <strong>Found</strong> from your <a href="{% url 'my-posts' %}"
+        style="color:var(--crimson);">My Posts</a> page.
+    </p>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Item Name *</label>
+          <input type="text" name="item" placeholder="e.g. Black iPhone 14" required>
+        </div>
+
+        <div class="form-group">
+          <label>Category *</label>
+          <select name="category" required>
+            <option value="" disabled selected>Select category</option>
+            <option value="Phone">Phone</option>
+            <option value="Laptop">Laptop</option>
+            <option value="Bag">Bag</option>
+            <option value="ID Card">ID Card</option>
+            <option value="Keys">Keys</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Description *</label>
+        <textarea name="description" rows="3" placeholder="Describe the item — colour, brand, any identifying marks..."
+          required></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date Lost *</label>
+          <input type="date" name="date_lost" required>
+        </div>
+
+        <div class="form-group">
+          <label>Photo (optional)</label>
+          <input type="file" name="image" accept="image/*">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Owner's Name *</label>
+          <input type="text" name="owner_name" placeholder="Full name" required>
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--light-gray);margin:20px 0;">
+      <p
+        style="font-size:0.82rem;font-weight:600;color:var(--text-mid);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:16px;">
+        Contact Information</p>
+
+
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="you@university.edu">
+        </div>
+
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" name="phone_number" placeholder="+234...">
+        </div>
+      </div>
+
+      <!-- Status is always 'Lost' on submit — no field shown to user -->
+
+      <div style="display:flex; gap:12px; margin-top:20px;">
+        <button type="submit" class="btn btn-primary" style="flex:1; justify-content:center; padding:11px;">
+          🔍 Submit Lost Report
+        </button>
+        <a href="{% url 'home-page' %}" class="btn btn-ghost" style="padding:11px 20px;">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

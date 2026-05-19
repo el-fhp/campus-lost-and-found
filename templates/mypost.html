@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}My Posts · Campus Lost & Found{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="container">
+    <h1>My Posts</h1>
+    <div class="breadcrumb">
+      <a href="{% url 'home-page' %}">Home</a>
+      <span>›</span>
+      <span>My Posts</span>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="padding-bottom:60px;">
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:22px;">
+    <p style="color:var(--text-light); font-size:0.9rem;">
+      Showing <strong>{{ items.count }}</strong> post{{ items.count|pluralize }} by you
+    </p>
+  </div>
+
+  {% if items %}
+    <table class="my-posts-table">
+      <thead>
+        <tr>
+          <th>Photo</th>
+          <th>Item</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Date Lost</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>
+            {% if item.image %}
+              <img src="{{ item.image.url }}" alt="{{ item.item }}">
+            {% else %}
+              <div style="width:52px;height:40px;background:var(--light-gray);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">📦</div>
+            {% endif %}
+          </td>
+          <td><strong>{{ item.item }}</strong></td>
+          <td>{{ item.category }}</td>
+          <td><span class="item-badge badge-{{ item.status|lower }}">{{ item.status }}</span></td>
+          <td>{{ item.date_lost }}</td>
+          <td>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+
+              <!-- Mark as Found — only show if still Lost -->
+              {% if item.status == 'Lost' %}
+                <form method="POST" action="{% url 'mark-found' item.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-found btn-sm"
+                    onclick="return confirm('Mark \'{{ item.item }}\' as Found?')">
+                    ✅ Mark Found
+                  </button>
+                </form>
+              {% endif %}
+
+              <!-- Delete -->
+              <form method="POST" action="{% url 'delete-item' item.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm"
+                  onclick="return confirm('Delete this post? This cannot be undone.')">
+                  🗑 Delete
+                </button>
+              </form>
+
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  {% else %}
+    <div class="empty-state">
+      <div class="icon">📋</div>
+      <h3>No posts yet</h3>
+      <p>You haven't reported any lost items yet.</p>
+      <br>
+      <a href="{% url 'submit-item' %}" class="btn btn-primary">Report a Lost Item</a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
